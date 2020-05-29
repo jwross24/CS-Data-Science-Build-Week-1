@@ -1,9 +1,10 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from sklearn.cluster import KMeans
 
 
-class KMeans:
+class CustomKMeans:
     def __init__(self, n_clusters=8, init='random', max_iter=300, tol=0.0001):
         self.n_clusters = n_clusters
         self.init = init
@@ -102,11 +103,23 @@ if __name__ == '__main__':
     df = df[['eruptions', 'waiting']]
     X = df.values
 
-    kmeans = KMeans(2)
+    km = KMeans(2)
+    km.fit(X)
+
+    kmeans = CustomKMeans(2)
     kmeans.fit(X)
 
-    # Plot the centroids and clusters
+    # Plot the centroids and clusters for the scikit-learn k-means
+    plt.figure(1)
+
+    plt.scatter(X[:, 0], X[:, 1], c=km.labels_, cmap='rainbow', s=30)
+    plt.scatter(km.cluster_centers_[:, 0],
+                km.cluster_centers_[:, 1], color='black', s=60, marker='*')
+    plt.title('Scikit-Learn Version', fontsize=16)
+
+    # Plot the centroids and clusters for the custom k-means
     colors = ['b', 'r', 'g', 'k', 'c']*10
+    plt.figure(2)
 
     for i, cluster in kmeans.clusters.items():
         color = colors[i]
@@ -115,5 +128,7 @@ if __name__ == '__main__':
 
     for centroid in kmeans.centroids.values():
         plt.scatter(centroid[0], centroid[1], color='black', s=60, marker='*')
+
+    plt.title('Custom Version', fontsize=16)
 
     plt.show()
